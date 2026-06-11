@@ -33,3 +33,16 @@ jobs:
         run: |
           aws sts get-caller-identity
           # Output will show the assumed role, not an access key
+
+      # Step 3: Run your Terraform commands
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: ./terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        working-directory: ./terraform
