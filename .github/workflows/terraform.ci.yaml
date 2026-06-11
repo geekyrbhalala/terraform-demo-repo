@@ -1,0 +1,35 @@
+# .github/workflows/deploy.yml
+name: Deploy with OIDC to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  # This is required — allows GitHub to request an OIDC token
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Step 1: Assume the AWS role using OIDC
+      # This is where the magic happens — GitHub generates a signed token,
+      # sends it to AWS, AWS verifies it against the trust policy, and returns temp credentials
+      - name: Assume AWS Role via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          # The role ARN comes from your Terraform output
+          aws-region: us-east-1
+
+      # Step 2: Now you have temp credentials in the environment
+      # Verify by calling AWS
+      - name: Verify AWS credentials
+        run: |
+          aws sts get-caller-identity
+          # Output will show the assumed role, not an access key
