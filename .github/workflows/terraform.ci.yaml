@@ -35,6 +35,10 @@ jobs:
           # Output will show the assumed role, not an access key
 
       # Step 3: Run your Terraform commands
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+
       - name: Terraform Init
         run: terraform init
         working-directory: ./terraform
